@@ -20,49 +20,69 @@ var otherAssets = function(req, res) {
 };
 
 var handlePost = function(req, res) {
-  var url = req.url;
-  var urlsData = '';
+  var url;
+  var urlsData;
   var memory;
+  res.writeHead(302);
   req.on('data', function(chunk) {
-    urlsData = chunk;
+    
+    urlsData = chunk.toString();
+    memory = urlsData.slice(4);
+    console.log('the url after slice', memory);
   });
-  // console.log(urlsData);
-  // req.on('end', function() {
+  
+  
   fs.readFile(archive.paths.list, 'utf8', function(err, data) {
-    console.log(data);
-    memory += data;
-      // memory instanceof Buffer ? memory = Buffer.concat(memory).toString() : console.log('Chunks are not buffers');
-      //check if file has urls data 
-      //if not, append to file]
+    console.log('before', data);
+
+    if (data.indexOf(memory) > 0) {
+      
+    } else {
+      data += memory;
+      console.log('im about to write to a file', data);
+      fs.writeFile(archive.paths.list, data);
+     
+      res.end();
+    }
   });
-  // });
-  // console.log(JSON.stringify(memory));
-  // res.end('done');
+  
+};
+
+
+var siteFinder = function(req, res) {
+  var url = archive.paths.archivedSites + '/' + req.url;
+  fs.exists(url, function(e) {
+    if (!e) {
+      res.writeHead(404);
+      res.end();
+    } else {
+      fs.readFile(url, 'utf8', function(error, data) {
+        res.end(data);
+      });
+    }
+  });
 };
 
 exports.handleRequest = function (req, res) {
   // var parser = document.createElement('a');
   var statusCode = 200;
   // parser.href = req.url;
-  if (req.url === '/') {
+  if (req.url === '/' && req.method === 'GET') {
     headers['Content-Type'] = 'text/html';
     res.writeHead(statusCode, headers);
     indexServer(req, res);
-  } else {
-    res.writeHead(statusCode);
-    res.end();
-  }
-  //handle css or js
-  if (req.url.indexOf('.css') > 0 || req.url.indexOf('.js') > 0) {
+  } else if (req.url.indexOf('.css') > 0 || req.url.indexOf('.js') > 0) {
     headers['Content-Type'] = 'text/css';
     req.url.indexOf('.js') > 0 ? headers['Content-Type'] = 'application/javascript' : 0;
     res.writeHead(statusCode, headers);
     otherAssets(req, res);
-  }
-
-  if (req.method === 'POST') {
+  } else if (req.method === 'POST') {
+    // console.dir(req.send.url);
     handlePost(req, res);
-  }
+  } else if (req.method === 'GET') {
+    siteFinder(req, res);
+  } 
+  //handle css or js
   // res.end(archive.paths.list);
 };
 
