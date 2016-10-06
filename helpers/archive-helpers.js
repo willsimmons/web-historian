@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 
+
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
  * Consider using the `paths` object below to store frequently used file paths. This way,
@@ -25,17 +26,41 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  var url = this.paths.list;
+  fs.readFile(url, 'utf8', function(error, data) {
+    var dataToArray = data.split('\n');
+    callback(dataToArray);
+  });
 };
 
-exports.isUrlInList = function() {
+exports.isUrlInList = function(url, callback) {
+  var urlForFile = this.paths.list;
+  fs.readFile(urlForFile, 'utf8', function(error, data) {
+    var exists = false;
+    data.indexOf(url) !== -1 ? exists = true : 0;
+    callback(exists);
+  });
 };
 
-exports.addUrlToList = function() {
+exports.addUrlToList = function(url, callback) {
+  var urlForFile = this.paths.list;
+  fs.readFile(urlForFile, 'utf8', function(err, data) {  
+    data += url + '\n';
+    fs.writeFile(urlForFile, data);
+    callback(url);
+  });
 };
 
-exports.isUrlArchived = function() {
+exports.isUrlArchived = function(url, callback) {
+  var urlForFile = this.paths.archivedSites;
+  fs.readdir(urlForFile, function(error, files) {
+    var exists = false;
+    files.indexOf(url) !== -1 ? exists = true : 0;
+    callback(exists);
+  });
 };
 
 exports.downloadUrls = function() {
 };
+
