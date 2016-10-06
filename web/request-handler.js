@@ -3,6 +3,7 @@ var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
 var url = require('url');
 var headers = require('../web/http-helpers').headers;
+var fetcher = require('../workers/htmlfetcher');
 // require more modules/folders here!
 
 var indexServer = function(req, res) {
@@ -25,24 +26,47 @@ var handlePost = function(req, res) {
   var memory;
   res.writeHead(302);
   req.on('data', function(chunk) {
-    
     urlsData = chunk.toString();
     memory = urlsData.slice(4);
+    console.log(urlsData);
     
   });
-  
-  
-  fs.readFile(archive.paths.list, 'utf8', function(err, data) {
-    console.log('before', data);
 
-    if (data.indexOf(memory) > 0) {
+  req.on('end', function() {
+    fs.readFile(archive.paths.list, 'utf8', function(error, data) {
+      var exists = false;
+      data.indexOf(memory) !== -1 ? exists = true : 0;
+      if (exists) {
+        var fileName = './web/public/loading.html';
+        fs.readFile(fileName, 'utf8', function(error, data) {
+          res.end(data);
+        });
+      } else {
+        var urlForFile = archive.paths.archivedSites;
+        fs.readdir(urlForFile, function(error, files) {
+          var exists = false;
+          files.indexOf(memory) !== -1 ? exists = true : 0;
+          if (exists) {
+            fs.readFile(archive.paths.archivedSites + '/' + memory, 'utf8', function(error, data) {
+              res.end(data);
+            });
+          } else {
+            archive.addUrlToList(memory);
+            console.log('here');
+            setTimeout(function() {
+              fetcher.htmlfetcher();
+              
+            }, 300);
+            var fileName = './web/public/loading.html';
+            fs.readFile(fileName, 'utf8', function(error, data) {
+              res.end(data);
+            });    
+          }
+        });
+      }
       
-    } else {
-      data += memory;
-      fs.writeFile(archive.paths.list, data);
-     
-      res.end();
-    }
+    });    
+
   });
   
 };

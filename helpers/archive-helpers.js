@@ -40,7 +40,12 @@ exports.isUrlInList = function(url, callback) {
   fs.readFile(urlForFile, 'utf8', function(error, data) {
     var exists = false;
     data.indexOf(url) !== -1 ? exists = true : 0;
-    callback(exists);
+    if (callback) {
+      console.log('why is there a callback');
+      callback(exists); 
+    } else {
+      console.log('there isnt a call back');
+    }
   });
 };
 
@@ -49,7 +54,11 @@ exports.addUrlToList = function(url, callback) {
   fs.readFile(urlForFile, 'utf8', function(err, data) {  
     data += url + '\n';
     fs.writeFile(urlForFile, data);
-    callback(url);
+    if (callback) {
+      callback(url);
+    } else {
+      console.log('done');
+    }
   });
 };
 
