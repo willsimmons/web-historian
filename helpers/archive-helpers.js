@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var http = require('http');
 
 
 /*
@@ -61,6 +62,26 @@ exports.isUrlArchived = function(url, callback) {
   });
 };
 
-exports.downloadUrls = function() {
+exports.downloadUrls = function(urlOfArray) {
+  var context = this.paths.archivedSites;
+  urlOfArray.forEach(function(url) {
+    return http.get({
+      host: url
+    }, function(response) {
+      var body = '';
+      response.on('data', function(d) {
+        body += d;
+      });
+      response.on('end', function() {
+        var urlToWrite = context + '/' + url;
+        console.log(urlToWrite);
+        console.log(url);
+        fs.writeFile(urlToWrite, body);
+      });
+    });
+  });
+ 
 };
 
+
+ 

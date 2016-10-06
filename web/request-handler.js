@@ -28,7 +28,7 @@ var handlePost = function(req, res) {
     
     urlsData = chunk.toString();
     memory = urlsData.slice(4);
-    console.log('the url after slice', memory);
+    
   });
   
   
@@ -39,7 +39,6 @@ var handlePost = function(req, res) {
       
     } else {
       data += memory;
-      console.log('im about to write to a file', data);
       fs.writeFile(archive.paths.list, data);
      
       res.end();
