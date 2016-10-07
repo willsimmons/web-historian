@@ -15,4 +15,5 @@ fs.readFile(url, 'utf8', function(error, data) {
   fs.writeFile(archive.paths.list, '');
 });
 
+//cronjob code
 //* * * * * /usr/local/bin/node /Users/student/Desktop/2016-09-web-historian/workers/htmlfetcher.js
