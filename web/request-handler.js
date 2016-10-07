@@ -29,34 +29,38 @@ var handlePost = function(req, res) {
     urlsData = chunk.toString();
     memory = urlsData.slice(4);
     console.log(urlsData);
-    
   });
 
   req.on('end', function() {
+
     fs.readFile(archive.paths.list, 'utf8', function(error, data) {
       var exists = false;
       data.indexOf(memory) !== -1 ? exists = true : 0;
+      //checking to see if there is any data
       if (exists) {
         var fileName = './web/public/loading.html';
         fs.readFile(fileName, 'utf8', function(error, data) {
           res.end(data);
         });
       } else {
+        //if there isnt data 
         var urlForFile = archive.paths.archivedSites;
         fs.readdir(urlForFile, function(error, files) {
           var exists = false;
           files.indexOf(memory) !== -1 ? exists = true : 0;
+          //if the file in the sites folder is there
           if (exists) {
             fs.readFile(archive.paths.archivedSites + '/' + memory, 'utf8', function(error, data) {
               res.end(data);
             });
           } else {
+            //no file and no data
             archive.addUrlToList(memory);
-            console.log('here');
-            setTimeout(function() {
-              fetcher.htmlfetcher();
+            // console.log('hedsfsdfsdare');
+            // setTimeout(function() {
+            //   fetcher.htmlfetcher();
               
-            }, 300);
+            // }, 300);
             var fileName = './web/public/loading.html';
             fs.readFile(fileName, 'utf8', function(error, data) {
               res.end(data);

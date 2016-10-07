@@ -7,13 +7,14 @@ var url = require('url');
 var headers = require('../web/http-helpers').headers;
 
 
-exports.htmlfetcher = function() {
-  var url = archive.paths.list;
-  console.log('inside the htmlfetcherfdsgdsfgdfsdsafasdf');
-  fs.readFile(url, 'utf8', function(error, data) {
-    var dataToArray = data.split('\n');
-    dataToArray.pop();
-    console.log(dataToArray);
-    archive.downloadUrls(dataToArray);
-  });
-};
+var url = archive.paths.list;
+console.log('inside the htmlfetcherfdsgdsfgdfsdsafasdf');
+fs.readFile(url, 'utf8', function(error, data) {
+  var dataToArray = data.split('\n');
+  dataToArray.pop();
+  console.log(dataToArray);
+  archive.downloadUrls(dataToArray);
+  fs.writeFile(archive.paths.list, '');
+});
+
+//* * * * * /usr/local/bin/node /Users/student/Desktop/2016-09-web-historian/workers/htmlfetcher.js
