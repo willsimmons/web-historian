@@ -4,7 +4,6 @@ var archive = require('../helpers/archive-helpers');
 var url = require('url');
 var headers = require('../web/http-helpers').headers;
 var fetcher = require('../workers/htmlfetcher');
-// require more modules/folders here!
 
 var indexServer = function(req, res) {
   var fileName = './web/public/index.html';
@@ -32,7 +31,6 @@ var handlePost = function(req, res) {
   });
 
   req.on('end', function() {
-
     fs.readFile(archive.paths.list, 'utf8', function(error, data) {
       var exists = false;
       data.indexOf(memory) !== -1 ? exists = true : 0;
@@ -56,10 +54,11 @@ var handlePost = function(req, res) {
           } else {
             //no file and no data
             archive.addUrlToList(memory);
+            // activate if no cron job running
             // console.log('hedsfsdfsdare');
             // setTimeout(function() {
             //   fetcher.htmlfetcher();
-              
+            // 
             // }, 300);
             var fileName = './web/public/loading.html';
             fs.readFile(fileName, 'utf8', function(error, data) {
@@ -68,11 +67,8 @@ var handlePost = function(req, res) {
           }
         });
       }
-      
     });    
-
-  });
-  
+  });  
 };
 
 
@@ -91,9 +87,7 @@ var siteFinder = function(req, res) {
 };
 
 exports.handleRequest = function (req, res) {
-  // var parser = document.createElement('a');
   var statusCode = 200;
-  // parser.href = req.url;
   if (req.url === '/' && req.method === 'GET') {
     headers['Content-Type'] = 'text/html';
     res.writeHead(statusCode, headers);
@@ -104,13 +98,10 @@ exports.handleRequest = function (req, res) {
     res.writeHead(statusCode, headers);
     otherAssets(req, res);
   } else if (req.method === 'POST') {
-    // console.dir(req.send.url);
     handlePost(req, res);
   } else if (req.method === 'GET') {
     siteFinder(req, res);
   } 
-  //handle css or js
-  // res.end(archive.paths.list);
 };
 
     
